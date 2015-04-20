@@ -69,27 +69,32 @@ Also note that apk files (Shell/Shell.apk) which are deodexed *require* the
 corresponding odex file (for example, Shell/arm/Shell.odex). See [What are ODEX
 files in Android?][8],
 
-| path under system/priv-app/ | description
-| --------------------------- | -----------
-| AndroidForWork        |
-| GCS                   |
-| GoogleBackupTransport |
-| GoogleContacts        |
-| GoogleDialer          | Google's replacement for the stamdard Dialer app.
-| GoogleFeedback        |
-| GoogleLoginService    |
-| GoogleOneTimeInitializer |
-| GooglePartnerSetup    |
-| GoogleServicesFramework | Required by many apps.
-| Hangouts              |
-| Launcher2             |
-| MusicFX               |
-| Phonesky              | Google Play Store.
-| PrebuiltGmsCore       |
-| SetupWizard           | Apparently important, configures device for first time use.
-| TagGoogle             | Google's replacement for [Tag][6] (NFC app)
-| Velvet                | Google Search.
-| Wallet                | Google Wallet.
+The package names below without `com.` prefix should be prefixed with
+`com.google.android.`.
+
+| path under system/priv-app/ | package name | description
+| --------------------------- | ------------ | -----------
+| AndroidForWork    | androidforwork |
+| GCS               | apps.gcs      | Google Connectivity Services (built-in VPN service?).
+| GoogleBackupTransport | backuptransport   | Backup your data to Google's server.
+| GoogleContacts    | contacts      | Google's replacement for the standard Contacts app.
+| GoogleDialer      | dialer        | Google's replacement for the standard Dialer app.
+| GoogleFeedback    | feedback      | Submits error reports to Google.
+| GoogleLoginService | gsf.login    | Log in with a Google account.
+| GoogleOneTimeInitializer | onetimeinitializer | Notifies other Google apps once (Play Store, Camera, Voice Dialer and Google Voice Search).
+| GooglePartnerSetup | partnersetup | Collects tracking information (["RLZ"][9]).
+| GoogleServicesFramework | gsf     | Required by many apps.
+| Hangouts          | talk          | Google Hangouts.
+| MusicFX           | com.android.musicfx   | Sound Effects.
+| Phonesky          | com.android.vending   | Google Play Store.
+| PrebuiltGmsCore   | gms           | Google Play Services.
+| SetupWizard       | setupwizard   | Configures device for first time use.
+| TagGoogle         | tag           | Google's replacement for [Tag][6] (NFC app)
+| Velvet            | googlequicksearchbox  | Google Search and Google Now.
+| Wallet            | apps.walletnfcrel     | Google Wallet.
+
+For some reason `system/priv-app/Launcher2/arm/Launcher2.odex` exists without a
+matching Launcher2.apk.
 
 Non-system apps do not have to be installed. For completeness, a list of files
 in system/app/:
@@ -156,3 +161,4 @@ in system/app/:
  [6]: https://github.com/CyanogenMod/android_packages_apps_Tag
  [7]: https://stackoverflow.com/a/20104400/427545
  [8]: https://stackoverflow.com/a/10323109/427545
+ [9]: https://github.com/rogerta/rlz
