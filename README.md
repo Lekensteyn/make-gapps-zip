@@ -144,6 +144,10 @@ files:
 | path under system/            | description
 | ----------------------------- | -----------
 | etc/firmware/wcd9320      | Audio chip.
+| etc/preferred-apps/google.xml | Sets which apps are triggered by which Google apps.
+| etc/sysconfig/google\_build.xml | Sets some feature flags like marking it as a Google-branded phone.
+| etc/sysconfig/google.xml | Allows GMS, Play store and Volta to run in powersave.
+| etc/updatecmds/google\_generic\_update.txt | Commands to move files associated with base Google packages.
 | lib/hw/power.hammerhead.so    | [Hammerhead Power HAL][11] (not needed)
 | lib/hw/power.msm8974.so       | [Qualcomm Power HAL][10] (not needed)
 | lib/soundfx/libfmas.so        | Some audio effects.
@@ -159,6 +163,50 @@ files:
 | media/audio/ui/NFCTransferInitiated.ogg
 | media/audio/ui/VideoStop.ogg
 
+### Files under /system/lib/
+| path under lib/   | description
+| ----------------- | -----------
+| libchrome.2214.89.so
+| libchromium\_android\_linker.so
+| lib\_dic\_en\_tablet\_USUK.conf.so
+| lib\_dic\_en\_USUK.conf.so
+| lib\_dic\_ja\_JP.conf.so
+| lib\_dic\_morphem\_ja\_JP.conf.so
+| libEnjemailuri.so
+| libennjcon.so
+| libennjubase1gb.so
+| libennjubase1.so
+| libennjubase1us.so
+| libennjubase2.so
+| libennjubase3.so
+| libennjyomi.so
+| libfacelock\_jni.so
+| libfilterpack\_facedetect.so
+| libgcam.so
+| libgcam\_swig\_jni.so
+| libgoogle\_hotword\_jni.so
+| libgoogle\_recognizer\_jni\_l.so
+| libiwnn.so
+| libjni\_latinimegoogle.so
+| liblightcycle.so
+| libnativehelper\_compat\_libc++.so
+| libnjaddress.so
+| libnjcon.so
+| libnjemoji.so
+| libnjexyomi\_plus.so
+| libnjexyomi.so
+| libnjfzk.so
+| libnjkaomoji.so
+| libnjname.so
+| libnjtan.so
+| libnjubase1.so
+| libnjubase2.so
+| libpatts\_engine\_jni\_api.so
+| libQSEEComAPI.so
+| librefocus.so
+| libspeexwrapper.so
+| libvcdecoder\_jni.so
+| libvorbisencoder.so
 
 ## Other resources
 
