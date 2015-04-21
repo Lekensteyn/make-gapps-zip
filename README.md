@@ -28,48 +28,7 @@ Recovery (see [install.cpp][3]). It is typically an Edify program which reads
 The following files exist in Google's factory image for the Nexus 5 (5.1.0
 LMY47I) and not in a CyanogenMod 12.1 build (from source at 2015-04-18).
 
-Data which is installed to the system partition (mounted under `/system`) are
-listed below.
-
-| path under system/            | description
-| ----------------------------- | -----------
-| out/bin/install-recovery.sh   |
-| out/recovery-from-boot.p      |
-| usr/srec/                     | Speech recognition files (for Google Voice?).
-| vendor/lib/libfrsdk.so        | Face Recognition library.
-| vendor/media/LMspeed\_508.emd | [for Google Hangouts?][5]
-| vendor/media/PFFprec\_600.emd | see LMspeed\_508.emd
-| vendor/pittpatt/              | Model files for face recognition.
-
-The `com.google.*.xml` files in `/system/etc/permissions` have only effect if a
-corresponding `/system/framework/com.google.*.jar` file exist. Overview of such
-files:
-
-| permission xml and framework jar name | description
-| ------------------------------------- | -----------
-| com.google.android.camera2            |
-| com.google.android.dialer.support     |
-| com.google.android.maps               |
-| com.google.android.media.effects      |
-| com.google.widevine.software.drm      |
-
-| path              | description
-| ----------------- | -----------
-| etc/firmware/wcd9320      | Audio chip.
-| lib/hw/power.hammerhead.so    | [Hammerhead Power HAL][11] (not needed)
-| lib/hw/power.msm8974.so       | [Qualcomm Power HAL][10] (not needed)
-| lib/soundfx/libfmas.so        | Some audio effects.
-| framework/com.android.nfc\_extras.jar | Empty jar file, why...?
-| media/audio/ringtones/RobotsforEveryone.ogg
-| media/audio/ringtones/SpagnolaOrchestration.ogg
-| media/audio/ui/audio\_end.ogg
-| media/audio/ui/audio\_initiate.ogg
-| media/audio/ui/NFCFailure.ogg
-| media/audio/ui/NFCInitiated.ogg
-| media/audio/ui/NFCSuccess.ogg
-| media/audio/ui/NFCTransferComplete.ogg
-| media/audio/ui/NFCTransferInitiated.ogg
-| media/audio/ui/VideoStop.ogg
+### Apps
 
 Apps in system/priv-app/ are "privileged" apps which can gain more privileges
 than other system apps in system/app/ (see [AOSP Privileged vs System app][7]).
@@ -155,6 +114,51 @@ in system/app/:
 | Videos                 |
 | WebViewGoogle          |
 | YouTube                |
+
+### Other system files
+Data which is installed to the system partition (mounted under `/system`) are
+listed below.
+
+| path under system/            | description
+| ----------------------------- | -----------
+| out/bin/install-recovery.sh   |
+| out/recovery-from-boot.p      |
+| usr/srec/                     | Speech recognition files (for Google Voice?).
+| vendor/lib/libfrsdk.so        | Face Recognition library.
+| vendor/media/LMspeed\_508.emd | [for Google Hangouts?][5]
+| vendor/media/PFFprec\_600.emd | see LMspeed\_508.emd
+| vendor/pittpatt/              | Model files for face recognition.
+
+The `com.google.*.xml` files in `/system/etc/permissions` have only effect if a
+corresponding `/system/framework/com.google.*.jar` file exist. Overview of such
+files:
+
+| permission xml and framework jar name | description
+| ------------------------------------- | -----------
+| com.google.android.camera2            |
+| com.google.android.dialer.support     |
+| com.google.android.maps               |
+| com.google.android.media.effects      |
+| com.google.widevine.software.drm      |
+
+| path under system/            | description
+| ----------------------------- | -----------
+| etc/firmware/wcd9320      | Audio chip.
+| lib/hw/power.hammerhead.so    | [Hammerhead Power HAL][11] (not needed)
+| lib/hw/power.msm8974.so       | [Qualcomm Power HAL][10] (not needed)
+| lib/soundfx/libfmas.so        | Some audio effects.
+| framework/com.android.nfc\_extras.jar | Empty jar file, why...?
+| media/audio/ringtones/RobotsforEveryone.ogg
+| media/audio/ringtones/SpagnolaOrchestration.ogg
+| media/audio/ui/audio\_end.ogg
+| media/audio/ui/audio\_initiate.ogg
+| media/audio/ui/NFCFailure.ogg
+| media/audio/ui/NFCInitiated.ogg
+| media/audio/ui/NFCSuccess.ogg
+| media/audio/ui/NFCTransferComplete.ogg
+| media/audio/ui/NFCTransferInitiated.ogg
+| media/audio/ui/VideoStop.ogg
+
 
 ## Other resources
 
