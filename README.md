@@ -41,17 +41,25 @@ listed below.
 | vendor/media/PFFprec\_600.emd | see LMspeed\_508.emd
 | vendor/pittpatt/              | Model files for face recognition.
 
+The `com.google.*.xml` files in `/system/etc/permissions` have only effect if a
+corresponding `/system/framework/com.google.*.jar` file exist. Overview of such
+files:
+
+| permission xml and framework jar name | description
+| ------------------------------------- | -----------
+| com.google.android.camera2            |
+| com.google.android.dialer.support     |
+| com.google.android.maps               |
+| com.google.android.media.effects      |
+| com.google.widevine.software.drm      |
+
 | path              | description
 | ----------------- | -----------
-| etc/firmware/wcd9320
-| etc/permissions/com.google.android.camera2.xml
-| etc/permissions/com.google.android.dialer.support.xml
-| etc/permissions/com.google.android.maps.xml
-| etc/permissions/com.google.android.media.effects.xml
-| etc/permissions/com.google.widevine.software.drm.xml
-| lib/hw/power.hammerhead.so
-| lib/hw/power.msm8974.so
-| lib/soundfx/libfmas.so
+| etc/firmware/wcd9320      | Audio chip.
+| lib/hw/power.hammerhead.so    | [Hammerhead Power HAL][11] (not needed)
+| lib/hw/power.msm8974.so       | [Qualcomm Power HAL][10] (not needed)
+| lib/soundfx/libfmas.so        | Some audio effects.
+| framework/com.android.nfc\_extras.jar | Empty jar file, why...?
 | media/audio/ringtones/RobotsforEveryone.ogg
 | media/audio/ringtones/SpagnolaOrchestration.ogg
 | media/audio/ui/audio\_end.ogg
@@ -162,3 +170,5 @@ in system/app/:
  [7]: https://stackoverflow.com/a/20104400/427545
  [8]: https://stackoverflow.com/a/10323109/427545
  [9]: https://github.com/rogerta/rlz
+ [10]: https://github.com/CyanogenMod/android_device_qcom_common/tree/cm-12.1/power
+ [11]: https://github.com/CyanogenMod/android_device_lge_hammerhead/blob/cm-12.0/power/power_hammerhead.c
