@@ -90,7 +90,7 @@ in system/app/:
 | GoogleHome             |
 | GooglePinyinIME        |
 | GoogleTTS              |
-| iWnnIME                |
+| iWnnIME                | Japanese input method (uses libs, see below).
 | KoreanIME              |
 | LatinImeGoogle         |
 | Maps                   |
@@ -164,49 +164,48 @@ files:
 | media/audio/ui/VideoStop.ogg
 
 ### Files under /system/lib/
-| path under lib/   | description
-| ----------------- | -----------
+While most of the files in /system/lib/ are library files, there is an exception
+for a certain set of files. These are text files:
+
+ - lib\_dic\_en\_tablet\_USUK.conf.so
+ - lib\_dic\_en\_USUK.conf.so
+ - lib\_dic\_ja\_JP.conf.so
+ - lib\_dic\_morphem\_ja\_JP.conf.so
+
+The `libenj*.so` and `libnj*.so` files all start and terminate with the
+character sequence `NJDC`. These files match:
+
+ - libEnjemailuri.so, libennjcon.so, libennjubase1gb.so, libennjubase1.so,
+   libennjubase1us.so, libennjubase2.so, libennjubase3.so, libennjyomi.so,
+ - libnjaddress.so, libnjcon.so, libnjemoji.so, libnjexyomi\_plus.so,
+   libnjexyomi.so, libnjfzk.so, libnjkaomoji.so, libnjname.so, libnjtan.so,
+   libnjubase1.so, libnjubase2.so,
+
+The above sets of files seem to be used by **libiwnn.so** which references the
+string `NJDC`. This library is used by [iWnnIME][12] which is an input method
+for Japanese. The file `/system/framework/framework-res.apk` also contains a
+reference to the string `iwnn`.
+
+| path under lib/       | description
+| --------------------- | -----------
 | libchrome.2214.89.so
 | libchromium\_android\_linker.so
-| lib\_dic\_en\_tablet\_USUK.conf.so
-| lib\_dic\_en\_USUK.conf.so
-| lib\_dic\_ja\_JP.conf.so
-| lib\_dic\_morphem\_ja\_JP.conf.so
-| libEnjemailuri.so
-| libennjcon.so
-| libennjubase1gb.so
-| libennjubase1.so
-| libennjubase1us.so
-| libennjubase2.so
-| libennjubase3.so
-| libennjyomi.so
-| libfacelock\_jni.so
-| libfilterpack\_facedetect.so
-| libgcam.so
-| libgcam\_swig\_jni.so
-| libgoogle\_hotword\_jni.so
-| libgoogle\_recognizer\_jni\_l.so
-| libiwnn.so
-| libjni\_latinimegoogle.so
-| liblightcycle.so
-| libnativehelper\_compat\_libc++.so
-| libnjaddress.so
-| libnjcon.so
-| libnjemoji.so
-| libnjexyomi\_plus.so
-| libnjexyomi.so
-| libnjfzk.so
-| libnjkaomoji.so
-| libnjname.so
-| libnjtan.so
-| libnjubase1.so
-| libnjubase2.so
-| libpatts\_engine\_jni\_api.so
-| libQSEEComAPI.so
-| librefocus.so
-| libspeexwrapper.so
-| libvcdecoder\_jni.so
-| libvorbisencoder.so
+| libfacelock\_jni.so   | Used by FaceLock app.
+| libfilterpack\_facedetect.so | Used by com.google.android.media.effects.
+| libgcam.so            | Used by GoogleCamera app.
+| libgcam\_swig\_jni.so | Used by GoogleCamera app.
+| libgoogle\_hotword\_jni.so | Guessed: "Ok Google" hotword detection (Search).
+| libgoogle\_recognizer\_jni\_l.so | Used by GoogleTTS and GoogleEars.
+| libiwnn.so            | Used by the iWnnIME app (see above).
+| libjni\_latinimegoogle.so | Used by LatinImeGoogle app.
+| liblightcycle.so      | Used by PlusOne and GoogleCamera apps.
+| libnativehelper\_compat\_libc++.so | Used by libgcam\_swig\_jni.so (GoogleCamera).
+| libpatts\_engine\_jni\_api.so | Used by GoogleTTS app.
+| libQSEEComAPI.so      | Qualcomm crypto API (facilitates DRM).
+| librefocus.so         | Used by GoogleCamera app.
+| libspeexwrapper.so    | Used by GoogleTTS app.
+| libvcdecoder\_jni.so  | Used by GoogleEars app.
+| libvorbisencoder.so   | Used by GoogleEars app.
 
 ## Other resources
 
@@ -224,3 +223,4 @@ files:
  [9]: https://github.com/rogerta/rlz
  [10]: https://github.com/CyanogenMod/android_device_qcom_common/tree/cm-12.1/power
  [11]: https://github.com/CyanogenMod/android_device_lge_hammerhead/blob/cm-12.0/power/power_hammerhead.c
+ [12]: https://play.google.com/store/apps/details?id=jp.co.omronsoft.iwnnime.ml
