@@ -66,54 +66,54 @@ matching Launcher2.apk.
 Non-system apps do not have to be installed. For completeness, a list of files
 in system/app/:
 
-| path under system/app/ | description
-| ---------------------- | -----------
-| Books                  |
-| BrowserProviderProxy   |
-| CalendarGooglePrebuilt |
-| Chrome                 |
-| CloudPrint2            |
-| ConfigUpdater          |
-| DeskClockGoogle        |
-| DMAgent                |
-| Drive                  |
-| EditorsDocs            |
-| EditorsSheets          |
-| EditorsSlides          |
-| FaceLock               |
-| FitnessPrebuilt        |
-| GoogleCamera           |
-| GoogleContactsSyncAdapter |
-| GoogleEars             |
-| GoogleEarth            |
-| GoogleHindiIME         |
-| GoogleHome             |
-| GooglePinyinIME        |
-| GoogleTTS              |
-| iWnnIME                | Japanese input method (uses libs, see below).
-| KoreanIME              |
-| LatinImeGoogle         |
-| Maps                   |
-| MediaShortcuts         |
-| Music2                 |
-| Newsstand              |
-| OmaDmclient            |
-| PartnerBookmarksProvider |
-| Photos                 |
-| PlayGames              |
-| PlusOne                |
-| PrebuiltEmailGoogle    |
-| PrebuiltExchange3Google |
-| PrebuiltGmail          |
-| PrebuiltKeep           |
-| PrebuiltNewsWeather    |
-| SprintHiddenMenu       |
-| Street                 |
-| SunBeam                |
-| talkback               |
-| Videos                 |
-| WebViewGoogle          |
-| YouTube                |
+| path under system/app/ | package name     | description
+| ---------------------- | ---------------- | -----------
+| Books             |  com.google.android.apps.books        |
+| BrowserProviderProxy | com.android.browser.provider       |
+| CalendarGooglePrebuilt | com.google.android.calendar      |
+| Chrome            | com.android.chrome                    | Chrome web browser (uses libs, see below).
+| CloudPrint2       | com.google.android.apps.cloudprint    |
+| ConfigUpdater     | com.google.android.configupdater      |
+| DeskClockGoogle   | com.google.android.deskclock          |
+| DMAgent           | com.google.android.apps.enterprise.dmagent |
+| Drive             | com.google.android.apps.docs          |
+| EditorsDocs       | com.google.android.apps.docs.editors.docs |
+| EditorsSheets     | com.google.android.apps.docs.editors.sheets |
+| EditorsSlides     | com.google.android.apps.docs.editors.slides |
+| FaceLock          | com.android.facelock                  |
+| FitnessPrebuilt   | com.google.android.apps.fitness       |
+| GoogleCamera      | com.google.android.GoogleCamera       |
+| GoogleContactsSyncAdapter | com.google.android.syncadapters.contacts |
+| GoogleEars        | com.google.android.ears               |
+| GoogleEarth       | com.google.earth                      |
+| GoogleHindiIME    | com.google.android.apps.inputmethod.hindi |
+| GoogleHome        | com.google.android.launcher           |
+| GooglePinyinIME   | com.google.android.inputmethod.pinyin |
+| GoogleTTS         | com.google.android.tts                |
+| iWnnIME           | jp.co.omronsoft.iwnnime.ml            | Japanese input method (uses libs, see below).
+| KoreanIME         | com.google.android.inputmethod.korean |
+| LatinImeGoogle    | com.google.android.inputmethod.latin  |
+| Maps              | com.google.android.apps.maps          |
+| MediaShortcuts    | com.google.android.gallery3d          |
+| Music2            | com.google.android.music              |
+| Newsstand         | com.google.android.apps.magazines     |
+| OmaDmclient       | com.redbend.vdmc                      |
+| PartnerBookmarksProvider | com.android.providers.partnerbookmarks |
+| Photos            | com.google.android.apps.photos        |
+| PlayGames         | com.google.android.play.games         |
+| PlusOne           | com.google.android.apps.plus          |
+| PrebuiltEmailGoogle | com.google.android.email            |
+| PrebuiltExchange3Google | com.google.android.gm.exchange  |
+| PrebuiltGmail     | com.google.android.gm                 |
+| PrebuiltKeep      | com.google.android.keep               |
+| PrebuiltNewsWeather | com.google.android.apps.genie.geniewidget |
+| SprintHiddenMenu  | com.lge.SprintHiddenMenu              |
+| Street            | com.google.android.street             |
+| SunBeam           | com.android.phasebeamorange           |
+| talkback          | com.google.android.marvin.talkback    |
+| Videos            | com.google.android.videos             |
+| WebViewGoogle     | com.google.android.webview            |
+| YouTube           | com.google.android.youtube            |
 
 ### Other system files
 Data which is installed to the system partition (mounted under `/system`) are
@@ -188,8 +188,8 @@ reference to the string `iwnn`.
 
 | path under lib/       | description
 | --------------------- | -----------
-| libchrome.2214.89.so
-| libchromium\_android\_linker.so
+| libchrome.2214.89.so  | Used by Chrome app (symlinked from it).
+| libchromium\_android\_linker.so | Used by Chrome app (symlinked from it).
 | libfacelock\_jni.so   | Used by FaceLock app.
 | libfilterpack\_facedetect.so | Used by com.google.android.media.effects.
 | libgcam.so            | Used by GoogleCamera app.
