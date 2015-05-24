@@ -169,8 +169,8 @@ for a certain set of files. These are text files:
  - lib\_dic\_ja\_JP.conf.so
  - lib\_dic\_morphem\_ja\_JP.conf.so
 
-The `libenj*.so` and `libnj*.so` files all start and terminate with the
-character sequence `NJDC`. These files match:
+The `libEnjemailuri.so`, `libennj*.so` and `libnj*.so` files all start and
+terminate with the character sequence `NJDC`. These files match:
 
  - libEnjemailuri.so, libennjcon.so, libennjubase1gb.so, libennjubase1.so,
    libennjubase1us.so, libennjubase2.so, libennjubase3.so, libennjyomi.so,
