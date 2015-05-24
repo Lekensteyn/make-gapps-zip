@@ -34,12 +34,12 @@ Apps in system/priv-app/ are "privileged" apps which can gain more privileges
 than other system apps in system/app/ (see [AOSP Privileged vs System app][7]).
 Also note that apk files (Shell/Shell.apk) which are deodexed *require* the
 corresponding odex file (for example, Shell/arm/Shell.odex). See [What are ODEX
-files in Android?][8],
+files in Android?][8]. Files marked with an \* below are **not** odexed.
 
 | path under system/priv-app/ | package name | description
 | --------------------------- | ------------ | -----------
 | AndroidForWork    | com.google.android.androidforwork |
-| GCS               | com.google.android.apps.gcs   | Google Connectivity Services (built-in VPN service?).
+| GCS\*             | com.google.android.apps.gcs   | Google Connectivity Services (built-in VPN service?).
 | GoogleBackupTransport | com.google.android.backuptransport | Backup your data to Google's server.
 | GoogleContacts    | com.google.android.contacts   | Google's replacement for the standard Contacts app.
 | GoogleDialer      | com.google.android.dialer     | Google's replacement for the standard Dialer app.
@@ -48,14 +48,14 @@ files in Android?][8],
 | GoogleOneTimeInitializer | com.google.android.onetimeinitializer | Notifies other Google apps once (Play Store, Camera, Voice Dialer and Google Voice Search).
 | GooglePartnerSetup| com.google.android.partnersetup| Collects tracking information (["RLZ"][9]).
 | GoogleServicesFramework | com.google.android.gsf  | Required by many apps.
-| Hangouts          | com.google.android.talk       | Google Hangouts.
+| Hangouts\*        | com.google.android.talk       | Google Hangouts.
 | MusicFX           | com.android.musicfx           | Sound Effects.
-| Phonesky          | com.android.vending           | Google Play Store.
-| PrebuiltGmsCore   | com.google.android.gms        | Google Play Services.
+| Phonesky\*        | com.android.vending           | Google Play Store.
+| PrebuiltGmsCore\* | com.google.android.gms        | Google Play Services.
 | SetupWizard       | com.google.android.setupwizard| Configures device for first time use.
 | TagGoogle         | com.google.android.tag        | Google's replacement for [Tag][6] (NFC app)
-| Velvet            | com.google.android.googlequicksearchbox | Google Search and Google Now.
-| Wallet            | com.google.android.apps.walletnfcrel | Google Wallet.
+| Velvet\*          | com.google.android.googlequicksearchbox | Google Search and Google Now.
+| Wallet\*          | com.google.android.apps.walletnfcrel | Google Wallet.
 
 For some reason `system/priv-app/Launcher2/arm/Launcher2.odex` exists without a
 matching Launcher2.apk.
