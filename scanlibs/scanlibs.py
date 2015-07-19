@@ -131,6 +131,16 @@ def _filename_to_node_label(filename):
     #return filename
     return filename.split('/')[-1]
 
+# Template for HTML outputs
+_html_header = '''
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1">
+<style>html,body{overflow:hidden;margin:0;padding:0;width:100vw;height:100vh;}</style>
+<script src="https://ariutta.github.io/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+<script>self.onload=function(){svgPanZoom(document.querySelector('svg'),{minZoom:.1,maxZoom:2});};</script>
+'''.strip()
+
 def plot_libs(dependencies, plot_path=None, plot_format=None):
     G = nx.DiGraph()
     for filename, libs in dependencies:
@@ -175,9 +185,19 @@ def plot_libs(dependencies, plot_path=None, plot_format=None):
     A.layout(prog='dot')
 
     # Possible formats are at http://www.graphviz.org/doc/info/output.html
-    if not plot_path and not plot_format:
-        plot_format = 'xlib'
-    A.draw(path=plot_path, format=plot_format)
+    if not plot_format:
+        if not plot_path:
+            plot_format = 'xlib'
+        elif plot_path.endswith('.html'):
+            plot_format = 'html'
+    if plot_format == 'html':
+        svg = A.draw(format='svg').decode('utf8')
+        html = re.sub(r'<\?xml[^>]+>\n<!DOCTYPE.+\n[^>]+>', '', svg, count=1)
+        with open(plot_path, 'w') as f:
+            f.write(_html_header)
+            f.write(html)
+    else:
+        A.draw(path=plot_path, format=plot_format)
 
 def parse_inputs(deps_filename, filenames):
     if deps_filename:
@@ -221,13 +241,14 @@ _parser.add_argument('--plot', action='store_true',
 _parser.add_argument('--plot-output', metavar='FILENAME',
         help='''
         Outputs a plot to the given file. The extension dictates the output
-        format (e.g. dot (default), svg, png). Implies --plot.
+        format (e.g. dot (default), svg, png, html (special)). Implies --plot.
         ''')
 _parser.add_argument('--plot-format', metavar='FORMAT',
         help='''
         Overrides the default plot format (the extension or "dot" for
         --plot-output, xlib otherwise). Implies --plot.
         See http://www.graphviz.org/doc/info/output.html for a list of formats.
+        The special "html" format will result in a SVG-based HTML file.
         ''')
 _parser.add_argument('--deps-file', metavar='FILENAME',
         help='Read dependencies from file')
