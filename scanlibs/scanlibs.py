@@ -1,31 +1,28 @@
 #!/usr/bin/env python
 # Scans for library dependencies and plot a graph between those.
 #
-# Usage: scanlibs.py [-plot] files...
+# Copyright (C) 2015 Peter Wu <peter@lekensteyn.nl>
+# Licensed under the MIT license, see LICENSE for details.
+#
+# Invoke `scanlibs.py --help` for usage. Examples:
 #
 # Print all libraries and its dependencies (paths followed by zero or more
 # dynamically linked libraries, optionally followed by a dot and one or more
 # runtime dependencies. Non-ELF input files are prepended with '#'):
 #
-#   find system/ -type f -exec ./scanlibs.py {} +
+#   find system/ -type f -exec ./scanlibs.py {} + > dependencies.txt
 #
 # Draws a plot for all libraries and its dependencies (orange edges mark runtime
 # dependencies that are not dynamically linked, bisque nodes are files that were
 # passed as argument):
 #
-#   find system/ -type f -exec ./scanlibs.py -plot {} +
+#   find system/ -type f -exec ./scanlibs.py --plot {} +
 #
-# Copyright (C) 2015 Peter Wu <peter@lekensteyn.nl>
-# Licensed under the MIT license, see LICENSE for details.
+# Draws a plot given a previous dependencies file:
+#
+#   ./scanlibs.py --plot --deps-file dependencies.txt
 
-import re, sys
-
-# For parsing binaries (programs and libraries).
-from elftools.elf.elffile import ELFFile
-from elftools.common.exceptions import ELFError
-
-# For -plot
-import networkx as nx
+import argparse, re
 
 # Library dependencies that are ignored. These common libraries are
 # likely not interesting but makes the plot unreadable.
@@ -114,8 +111,8 @@ def iter_files(filenames):
         except ELFError as e:
             yield filename, None
 
-def dump_libs(filenames):
-    for filename, libs in iter_files(filenames):
+def dump_libs(dependencies):
+    for filename, libs in dependencies:
         if not libs:
             print('# %s' % filename)
             continue
@@ -134,9 +131,9 @@ def _filename_to_node_label(filename):
     #return filename
     return filename.split('/')[-1]
 
-def plot_libs(filenames):
+def plot_libs(dependencies, plot_path=None, plot_format=None):
     G = nx.DiGraph()
-    for filename, libs in iter_files(filenames):
+    for filename, libs in dependencies:
         source_node = _filename_to_node_label(filename)
 
         # Color nodes which are located on the filesystem
@@ -178,12 +175,83 @@ def plot_libs(filenames):
     A.layout(prog='dot')
 
     # Possible formats are at http://www.graphviz.org/doc/info/output.html
-    A.draw(format='xlib')
+    if not plot_path and not plot_format:
+        plot_format = 'xlib'
+    A.draw(path=plot_path, format=plot_format)
+
+def parse_inputs(deps_filename, filenames):
+    if deps_filename:
+        with open(deps_filename) as f:
+            filename, dyn_libs, runtime_libs = None, None, None
+            libs = None
+            for line in f:
+                line = line.rstrip()
+
+                # Detect end of dependencies list for previous program or lib.
+                if not line.startswith('  '):
+                    if filename:
+                        yield filename, (dyn_libs, runtime_libs)
+                    filename = None
+
+                if line.startswith('# '):
+                    # Could not be parsed as ELF file
+                    yield line[2:], None
+                elif line.startswith('  '):
+                    # Dependencies for previous program or library.
+                    dep_filename = line[2:]
+                    assert filename
+                    if dep_filename == '.': # Marker for begin of runtime libs.
+                        libs = runtime_libs
+                    else:
+                        libs.append(dep_filename)
+                else:
+                    # Begin of library name
+                    filename = line
+                    dyn_libs, runtime_libs = [], []
+                    libs = dyn_libs
+            if filename:
+                yield filename, (dyn_libs, runtime_libs)
+    if filenames:
+        for item in iter_files(filenames):
+            yield item
+
+_parser = argparse.ArgumentParser()
+_parser.add_argument('--plot', action='store_true',
+        help='Draw a plot instead of generating output')
+_parser.add_argument('--plot-output', metavar='FILENAME',
+        help='''
+        Outputs a plot to the given file. The extension dictates the output
+        format (e.g. dot (default), svg, png). Implies --plot.
+        ''')
+_parser.add_argument('--plot-format', metavar='FORMAT',
+        help='''
+        Overrides the default plot format (the extension or "dot" for
+        --plot-output, xlib otherwise). Implies --plot.
+        See http://www.graphviz.org/doc/info/output.html for a list of formats.
+        ''')
+_parser.add_argument('--deps-file', metavar='FILENAME',
+        help='Read dependencies from file')
+_parser.add_argument('files', nargs='*',
+        help='Files to be parsed in addition to the (optional) dependencies file.')
 
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    if '-plot' in args:
-        args.remove('-plot')
-        plot_libs(args)
+    args = _parser.parse_args()
+    if args.files:
+        # For parsing binaries (programs and libraries).
+        from elftools.elf.elffile import ELFFile
+        from elftools.common.exceptions import ELFError
+    if args.plot_output or args.plot_format:
+        args.plot = True
+    if args.plot:
+        import networkx as nx
+
+    dependencies = parse_inputs(args.deps_file, args.files)
+
+    if args.plot:
+        plot_libs(
+            dependencies,
+            plot_path=args.plot_output,
+            plot_format=args.plot_format
+        )
     else:
-        dump_libs(args)
+        dump_libs(dependencies)
