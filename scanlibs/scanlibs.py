@@ -135,10 +135,10 @@ def _filename_to_node_label(filename):
 _html_header = '''
 <!doctype html>
 <meta charset="utf-8">
-<meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1">
-<style>html,body{overflow:hidden;margin:0;padding:0;width:100vw;height:100vh;}</style>
+<meta name="viewport" content="width=device-width,maximum-scale=2,minimum-scale=.1">
+<style>html,body{margin:0;padding:0;width:100vw;height:100vh;}</style>
 <script src="https://ariutta.github.io/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
-<script>self.onload=function(){svgPanZoom(document.querySelector('svg'),{minZoom:.1,maxZoom:2});};</script>
+<script>if(!('ontouchstart'in(self)))document.documentElement.style.overflow='hidden',self.onload=function(){svgPanZoom(document.querySelector('svg'),{minZoom:.1,maxZoom:2,controlIconsEnabled:!0});};</script>
 '''.strip()
 
 class PathSet(set):
