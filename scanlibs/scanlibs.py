@@ -141,20 +141,32 @@ _html_header = '''
 <script>self.onload=function(){svgPanZoom(document.querySelector('svg'),{minZoom:.1,maxZoom:2});};</script>
 '''.strip()
 
+class PathSet(set):
+    def __str__(self):
+        # Special case: single file, so drop full paths to this item. The file
+        # is presumably unique.
+        if len(self) == 1:
+            for path in self:
+                return path.split('/')[-1]
+        return '\n'.join(path for path in self)
+
 def plot_libs(dependencies, plot_path=None, plot_format=None):
     G = nx.DiGraph()
     for filename, libs in dependencies:
         source_node = _filename_to_node_label(filename)
 
-        # Color nodes which are located on the filesystem
-        source_node_attr = {
-            'fillcolor': 'bisque',
-            'style': 'filled',
-        }
+        if not source_node in G:
+            # Color nodes which are located on the filesystem
+            G.add_node(source_node, fillcolor='bisque', style='filled')
+
+        attrs = G.node[source_node]
+        # In case there are multiple (path) references to the same filename.
+        if not 'label' in attrs:
+            attrs['label'] = PathSet()
+        attrs['label'].add(filename)
         if not libs:
             # Add a red border for non-ELF files
-            source_node_attr['color'] = 'red'
-        G.add_node(source_node, **source_node_attr)
+            attrs['color'] = 'red'
 
         # Library lists can be None, so skip processing if the lists are empty.
         if not libs:
