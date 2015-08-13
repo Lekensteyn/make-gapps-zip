@@ -75,7 +75,7 @@ def add_classes_dex(apk_path, dex_path):
     """
     Adds the file specified by dex_path to an APK file (specified by apk_path).
     """
-    with zipfile.ZipFile(apk_path, "a") as z:
+    with zipfile.ZipFile(apk_path, "a", zipfile.ZIP_DEFLATED) as z:
         z.write(dex_path, "classes.dex")
 
 def process_apk(apk_path):
