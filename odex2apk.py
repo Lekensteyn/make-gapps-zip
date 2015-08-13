@@ -48,7 +48,7 @@ def odex_to_dex(odex_path):
     """
     Converts an .odex file to a .dex file, returning its path on success.
     """
-    dex_path = '%s.dex' % os.path.splitext(odex_path)[0]
+    dex_path = "%s.dex" % os.path.splitext(odex_path)[0]
     # Output directory for the dex file
     cwd = os.path.dirname(odex_path)
 
@@ -62,10 +62,10 @@ def odex_to_dex(odex_path):
     # still 0 even for errors...
     cmd = ["java", "-jar", os.path.abspath(OAT2DEX), "odex",
            os.path.abspath(odex_path)]
-    _logger.debug('Executing: %s', cmd)
+    _logger.debug("Executing: %s", cmd)
     output = subprocess.check_output(cmd, cwd=cwd, stderr=subprocess.STDOUT)
     if not os.path.exists(dex_path):
-        _logger.debug('Program output: %s', output.decode())
+        _logger.debug("Program output: %s", output.decode())
         raise RuntimeError("Failed to convert odex to dex")
 
     # File is generated! Accept it!
@@ -97,23 +97,23 @@ def process_apk(apk_path):
         _logger.info("Added %s to %s as classes.dex", dex_path, apk_path)
 
     # Ready!
-    _logger.info('%s is ready!', apk_path)
+    _logger.info("%s is ready!", apk_path)
 
 parser = argparse.ArgumentParser("odex2apk.py", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument('-d', '--debug', action='store_true',
-    help='Enable verbose debug logging')
+parser.add_argument("-d", "--debug", action="store_true",
+    help="Enable verbose debug logging")
 parser.add_argument("files", nargs="+", help="Paths to APK files")
 
 def main():
     args = parser.parse_args()
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
-            format='%(name)s: %(message)s')
+            format="%(name)s: %(message)s")
     for file_path in args.files:
         try:
             process_apk(file_path)
         except:
-            _logger.exception('Failed to process %s', file_path)
+            _logger.exception("Failed to process %s", file_path)
             sys.exit(1)
 
 if __name__ == "__main__":
