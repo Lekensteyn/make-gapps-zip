@@ -10,6 +10,12 @@ import argparse, logging, os, subprocess, tempfile, zipfile
 import odex2apk
 _logger = logging.getLogger("make-update-zip")
 
+# Path to signapk.jar for signing the zip file.
+# source: https://github.com/android/platform_build/tree/master/tools/signapk
+# https://android.googlesource.com/platform/prebuilts/sdk/+archive/master/tools/lib.tar.gz
+_dirname = os.path.dirname(__file__)
+SIGNAPK = os.getenv("SIGNAPK", os.path.join(_dirname, "signapk.jar"))
+
 # Path inside zip to place the update binary (do not change!)
 UPDATE_BINARY_PATH = "META-INF/com/google/android/update-binary"
 
@@ -51,12 +57,38 @@ def get_files(rootdir, packages):
             arcname = "system/%s/%s/%s" % (appdir, package, path)
             yield full_path, arcname
 
+def make_signed_zip(update_zip, public_key, private_key):
+    # Rename the original zip to -unsigned.zip
+    source_zip = '%s-unsigned%s' % os.path.splitext(update_zip)
+    _logger.debug("Renaming %s to %s", update_zip, source_zip)
+    os.rename(update_zip, source_zip)
+
+    # java -jar signapk.jar -w releasekey.{x509.pem,pk8} update{,-signed}.zip
+    cmd = ["java", "-jar", SIGNAPK, "-w", public_key, private_key,
+            source_zip, update_zip]
+    _logger.debug("Executing: %s", cmd)
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        _logger.debug("Program output: %s", e.output.decode())
+        _logger.warning("Failed to sign zip, restoring unsigned zip")
+        # Failed to create update zip, revert rename
+        os.rename(source_zip, update_zip)
+        raise
+
+    # Now that the signed zip is available, remove the unsigned one.
+    os.remove(source_zip)
+
 parser = argparse.ArgumentParser("make-update-zip.py", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument("-o", "--output", metavar="PATH", required=True,
     help="Path to output update zip file.")
 parser.add_argument("-d", "--debug", action="store_true",
     help="Enable verbose debug logging")
+parser.add_argument("-c", "--cert", dest="public_key",
+    help="X.509 PEM-encoded certificate for signing the zip file")
+parser.add_argument("-k", "--key", dest="private_key",
+    help="PKCS#8-formatted private key for signing the zip file")
 parser.add_argument("-r", "--rootdir", help="Local path to /system directory")
 parser.add_argument("packages", nargs="*", help="Names of extra packages")
 
@@ -92,8 +124,12 @@ def main():
             _logger.info("Adding %s", dest)
             z.write(path, dest)
 
-    # Sign the zip.
-    pass # TODO call SignApk.jar
+    # Sign the zip if a key is given.
+    if args.public_key and args.private_key:
+        _logger.info("Created zip %s, trying to sign it...", update_zip)
+        make_signed_zip(update_zip, args.public_key, args.private_key)
+    else:
+        _logger.warn("Zip file %s still needs to be signed!", update_zip)
 
     # Done!
     _logger.info("Update zip %s is ready!", update_zip)
