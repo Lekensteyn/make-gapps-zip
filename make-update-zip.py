@@ -2,10 +2,23 @@
 """
 Creates an update.zip for privileged system apps.
 """
+__author__ = "Peter Wu"
+__email__ = "peter@lekensteyn.nl"
+__license__ = "MIT"
 
 import argparse, logging, os, subprocess, tempfile, zipfile
 import odex2apk
 _logger = logging.getLogger("make-update-zip")
+
+# Path inside zip to place the update binary (do not change!)
+UPDATE_BINARY_PATH = "META-INF/com/google/android/update-binary"
+
+# The update-binary program that extracts files is passed three parameters:
+# $1: update binary number,
+# $2: fd number for status updates,
+# $3: filename of .zip file.
+# See https://source.android.com/devices/tech/ota/tools.html#update-packages
+UPDATE_BINARY = os.path.join(_dirname, "update-binary.sh")
 
 default_packages = """
 GoogleLoginService GoogleServicesFramework Phonesky PrebuiltGmsCore
@@ -71,7 +84,8 @@ def main():
 
     # Create a zip file.
     with zipfile.ZipFile(update_zip, "w", zipfile.ZIP_DEFLATED) as z:
-        # TODO: add updater binary/script
+        # Add updater script
+        z.write(UPDATE_BINARY, UPDATE_BINARY_PATH)
 
         # Add each package and related files to the the zip
         for path, dest in zip_files:
