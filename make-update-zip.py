@@ -60,6 +60,20 @@ def get_files(rootdir, packages):
             ext = os.path.splitext(filename)[1][1:]
             if filename.startswith(".") or ext in ("dex", "odex"):
                 continue
+
+            full_path = os.path.join(rootdir, path)
+            if os.path.islink(full_path):
+                # For symlinks, store just the destination.
+                target = os.readlink(full_path)
+                # Can only handle absolute symlinks in /system/ for now.
+                if not target.startswith("/system/"):
+                    _logger.warning("Ignoring symlink %s -> %s", relative_path,
+                            target)
+                    continue
+                # TODO store both links and destinations? Current approach will
+                # break if the app expects a file in its own directory...
+                path = target[len("/system/"):]
+
             full_path = os.path.join(rootdir, path)
             arcname = "system/%s" % path
             yield full_path, arcname
