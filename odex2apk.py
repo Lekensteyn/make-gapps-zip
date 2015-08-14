@@ -139,7 +139,7 @@ parser.add_argument("-f", "--framework", dest="framework_path",
     Directory that contains (arch)/boot.oat (if omitted, use ../../framework
     relative to the first given APK file).
     """)
-parser.add_argument("files", nargs="+", help="Paths to APK files")
+parser.add_argument("apk_files", nargs="+", help="Paths to APK files")
 
 # TODO: this is ugly, maybe split it...
 def detect_paths(apk_file, arch=None, framework_path=None):
@@ -167,13 +167,13 @@ def main():
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
             format="%(name)s: %(message)s")
 
-    arch, boot_odex_path = detect_paths(args.files[0],
+    arch, boot_odex_path = detect_paths(args.apk_files[0],
             args.arch, args.framework_path)
 
     # Validate boot path and try to optimize these files (needed for APK steps).
     process_boot(boot_odex_path)
 
-    for file_path in args.files:
+    for file_path in args.apk_files:
         try:
             process_apk(file_path, arch, boot_odex_path)
         except:
