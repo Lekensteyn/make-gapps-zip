@@ -108,11 +108,15 @@ def main():
             apk_files.append(path)
         zip_files.append((path, dest))
 
+    # Pre-processing before APK can be handled.
+    arch, boot_odex_path = odex2apk.detect_paths(apk_files[0])
+    odex2apk.process_boot(boot_odex_path)
+
     # Deodex each package.
     for apk_path in apk_files:
         _logger.debug("Deodexing %s", apk_path)
         # TODO check exception
-        odex2apk.process_apk(apk_path)
+        odex2apk.process_apk(apk_path, arch, boot_odex_path)
 
     # Create a zip file.
     with zipfile.ZipFile(update_zip, "w", zipfile.ZIP_DEFLATED) as z:
