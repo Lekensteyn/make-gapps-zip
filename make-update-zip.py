@@ -36,28 +36,32 @@ def find_files(root, prefix=""):
         relative_path = os.path.join(prefix, name)
         full_path = os.path.join(root, relative_path)
         if os.path.isdir(full_path):
+            # Recurse into directories
             for item in find_files(root, relative_path):
                 yield item
         else:
+            # Output normal files.
             yield relative_path
 
 def get_files(rootdir, packages):
     for package in packages:
-        # Find apk dir in system/priv-app/ or system/app/
+        # Find app dir (priv-app for system apps, app for others), relative to
+        # the root directory (system/).
         for appdir in ("priv-app", "app"):
-            apk_dir = os.path.join(rootdir, appdir, package)
-            if os.path.isdir(apk_dir):
+            apk_dir = os.path.join(appdir, package)
+            apk_dir_full = os.path.join(rootdir, apk_dir)
+            if os.path.isdir(apk_dir_full):
                 break
 
         # Add all files (apk, arm/bla.so) except hidden files (dotfiles) and
-        # (o)dex files.
-        for path in find_files(apk_dir):
+        # (o)dex files. Paths are relative to the system/ root.
+        for path in find_files(rootdir, apk_dir):
             filename = os.path.basename(path)
             ext = os.path.splitext(filename)[1][1:]
             if filename.startswith(".") or ext in ("dex", "odex"):
                 continue
-            full_path = os.path.join(apk_dir, path)
-            arcname = "system/%s/%s/%s" % (appdir, package, path)
+            full_path = os.path.join(rootdir, path)
+            arcname = "system/%s" % path
             yield full_path, arcname
 
 def make_signed_zip(update_zip, public_key, private_key):
