@@ -43,8 +43,11 @@ def find_files(root, prefix=""):
 
 def get_files(rootdir, packages):
     for package in packages:
-        appdir = "priv-app"
-        apk_dir = os.path.join(rootdir, appdir, package)
+        # Find apk dir in system/priv-app/ or system/app/
+        for appdir in ("priv-app", "app"):
+            apk_dir = os.path.join(rootdir, appdir, package)
+            if os.path.isdir(apk_dir):
+                break
 
         # Add all files (apk, arm/bla.so) except hidden files (dotfiles) and
         # (o)dex files.
