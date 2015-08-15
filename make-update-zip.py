@@ -102,6 +102,10 @@ def make_signed_zip(update_zip, public_key, private_key):
 
 parser = argparse.ArgumentParser("make-update-zip.py", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument("-f", "--extra-file", dest="extra_files", nargs="*",
+    help="""
+    Additional files (such as libraries) to include (relative to --rootdir)
+    """)
 parser.add_argument("-o", "--output", metavar="PATH", required=True,
     help="Path to output update zip file.")
 parser.add_argument("-d", "--debug", action="store_true",
@@ -128,6 +132,10 @@ def main():
         if path.endswith(".apk"):
             apk_files.append(path)
         zip_files.append((path, dest))
+
+    # Add additional files
+    for path in args.extra_files:
+        zip_files.append((path, path))
 
     # Pre-processing before APK can be handled.
     arch, boot_odex_path = odex2apk.detect_paths(apk_files[0])
