@@ -36,7 +36,7 @@ def detect_arch(dirname):
         arch_path = os.path.join(dirname, arch)
         if os.path.isdir(arch_path):
             return arch
-    raise FileNotFoundError("Unable to detect arch, must specify --arch")
+    return None
 
 def find_odex_for_apk(apk_path, arch):
     """
@@ -50,7 +50,7 @@ def find_odex_for_apk(apk_path, arch):
     if os.path.exists(odex_path):
         return odex_path
 
-    raise FileNotFoundError("No .odex file found!")
+    raise RuntimeError("No .odex file found for %s!" % apk_path)
 
 def odex_to_dex(odex_path, boot_odex_path):
     """
@@ -60,11 +60,9 @@ def odex_to_dex(odex_path, boot_odex_path):
     # Output directory for the dex file
     cwd = os.path.dirname(odex_path)
 
-    # remove old files first
-    try:
+    # remove old files first (if any, ignore race condition).
+    if os.path.exists(dex_path):
         os.remove(dex_path)
-    except FileNotFoundError:
-        pass # ignore missing files
 
     # Try to create a file. Check for the file existence as the exit code is
     # still 0 even for errors...
@@ -172,9 +170,8 @@ def detect_paths(apk_file, arch=None, framework_path=None):
 
     # Detect architecture based on the APK files.
     if not arch:
-        try:
-            arch = detect_arch(framework_path)
-        except FileNotFoundError:
+        arch = detect_arch(framework_path)
+        if not arch:
             _logger.error("Cannot detect architecture")
             sys.exit(1)
 
