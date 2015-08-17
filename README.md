@@ -8,14 +8,23 @@ https://developers.google.com/android/nexus/images
 
 ## Tool
 Some helper tools were created for the purpose of creating an update.zip that
-contains APKs and other related files. All of these files are released under the
-MIT license (see the header of the files).
+contains APKs and other related files. Almost all of these files are released
+under the MIT license (see the header of the files). Exceptions are the binary
+jar files, see the [copyright](copyright) document for more details.
 
-Before you can use odex2apk.py you have to download oat2dex.jar from
-https://github.com/testwhat/SmaliEx/raw/master/smaliex-bin/oat2dex.jar
-(see commit log of odex2apk.py for checksums and more precise commit hashes).
+Requires Python 2.7.8 or 3.4.2 or newer due to [Python issue
+14315](https://bugs.python.org/14315). If you cannot upgrade, try to edit
+/usr/lib/python2.7/zipfile.py (or /usr/lib/python3.4/zipfile.py) and change
+`while extra:` to `while len(extra) >= 4:` yourself.
 
-make-update-zip.py depends on odex2apk.py and signapk.jar.
+Tested with Python 2.7.10 and 3.4.3 and OpenJDK 1.8.0\_51 on Arch Linux x86\_64.
+Tested with a patched Python 2.7.5-5ubuntu3 and 3.4.0-0ubuntu2 and OpenJDK
+7u79-2.5.6-0ubuntu1.14.04.1  on Ubuntu 14.04LTS.
+It should also run on Windows and OS X though (if not, please fill a bug).
+
+odex2apk.py uses oat2dex.jar from https://github.com/testwhat/SmaliEx. A Java 7
+build is included in this repo. make-update-zip.py depends on odex2apk.py and
+signapk.jar. See the commit logs of those files for more details.
 
 ### odex2apk.py
 Convenience script that wraps around @testwhat's fork
