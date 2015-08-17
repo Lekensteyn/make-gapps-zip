@@ -82,9 +82,27 @@ def odex_to_dex(odex_path, boot_odex_path):
 def add_classes_dex(apk_path, dex_path):
     """
     Adds the file specified by dex_path to an APK file (specified by apk_path).
+
+    For reproducible builds, the timestamp of classes.dex matches
+    AndroidManifest.xml.
     """
-    with zipfile.ZipFile(apk_path, "a", zipfile.ZIP_DEFLATED) as z:
-        z.write(dex_path, "classes.dex")
+    # Sanity check and AndroidManifest.xml timestamp and OS type lookup.
+    with zipfile.ZipFile(apk_path) as z:
+        if "classes.dex" in z.namelist():
+            raise RuntimeError("classes.dex is already in %s!" % apk_path)
+        xml_zinfo = z.getinfo("AndroidManifest.xml")
+
+    # classes.dex zip entry info, independent of time, OS and Python version.
+    zinfo = zipfile.ZipInfo("classes.dex", xml_zinfo.date_time)
+    zinfo.compress_type = xml_zinfo.compress_type
+    zinfo.create_system = xml_zinfo.create_system
+    zinfo.create_version = xml_zinfo.create_version
+    zinfo.extract_version = xml_zinfo.extract_version
+    data = open(apk_path, "rb").read()
+
+    # Write actual classes.dex.
+    with zipfile.ZipFile(apk_path, "a") as z:
+        z.writestr(zinfo, data)
 
 def process_apk(apk_path, arch, boot_odex_path):
     # Sanity check...
