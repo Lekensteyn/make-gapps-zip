@@ -139,7 +139,10 @@ def process_boot(boot_odex_path):
         cmd = ["java", "-jar", OAT2DEX, "boot", boot_oat_path]
         _logger.info("Processing boot directory, may take a minute...")
         _logger.debug("Executing: %s", cmd)
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output = e.output
         if not os.path.exists(boot_odex_path):
             _logger.debug("Program output: %s", output.decode())
             raise RuntimeError("Failed to deoptimize boot.oat")
