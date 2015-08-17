@@ -57,6 +57,20 @@ The resulting zip file can then be installed in recovery with:
 
 Execute `make-update-zip.py --help` for more options.
 
+### Reproducibility
+For reproducible builds given the same files and signing keys, you must use the
+same Java major version. Otherwise signapk.jar orders the META-INF files
+differently and also produces a different manifest file (1.7.0\_79 and 1.7.0\_85
+result in the same files, 1.7.0\_79 and 1.8.0\_51 are different).
+
+odex2apk.py uses the same timestamp and OS metadata for classes.dex, based on
+AndroidManifest.xml inside the APK file, thereby achieving the same identical
+file contents.
+
+make-update-zip.py only produces identical files after signing. While unsigned
+files have identical file contents, the metadata may be different between runs
+(file modification times and operating system origin).
+
 ## Gapps documentation
 The following sections document files related to Google apps.
 
