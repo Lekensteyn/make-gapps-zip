@@ -6,7 +6,59 @@ update zip from a trusted firmware file.
 The base trusted firmware file is
 https://developers.google.com/android/nexus/images
 
-## Contents
+## Tool
+Some helper tools were created for the purpose of creating an update.zip that
+contains APKs and other related files. All of these files are released under the
+MIT license (see the header of the files).
+
+Before you can use odex2apk.py you have to download oat2dex.jar from
+https://github.com/testwhat/SmaliEx/raw/master/smaliex-bin/oat2dex.jar
+(see commit log of odex2apk.py for checksums and more precise commit hashes).
+
+make-update-zip.py depends on odex2apk.py and signapk.jar.
+
+### odex2apk.py
+Convenience script that wraps around @testwhat's fork
+(https://github.com/testwhat/SmaliEx) of @JesusFreke's smali. For APKs that are
+missing the classes.dex file, it generates that file from odex files (only
+suitable for Android 5 (Lollipop) that uses ART!). Invoke with the `--help`
+option for verbose usage.
+
+### make-update-zip.py
+Script that uses [odex2apk.py](odex2apk.py) to deodex ART-optimized APKs and
+puts all package-related files into a flashable zip. The installer script inside
+the zip ([update-binary](update-binary.sh)) then basically unpacks the system/
+folder to the `/system` partition (after mounting it).
+
+Example invocation to create an update.zip file with the four basic files needed
+for Google Play and sync adapters for sharing contacts and calender with Google:
+
+    ./make-update-zip.py -o update.zip -c testkey.x509.pem -k testkey.pk8 \
+        -r system GoogleLoginService GoogleServicesFramework Phonesky PrebuiltGmsCore \
+        GoogleContactsSyncAdapter CalendarProvider
+
+The certificate (`testkey.x509.pem`) and private key (`testkey.pk8`) must match
+the keys that were used to sign the system packages (also known as platform
+key). If these `-c ... -k ...` options are omitted, then you still have to sign
+the packages yourself using SignApk.jar.
+
+The resulting zip file can then be installed in recovery with:
+
+    adb sideload update.zip
+
+Execute `make-update-zip.py --help` for more options.
+
+## Gapps documentation
+The following sections document files related to Google apps.
+
+The four required applications for Google Play are:
+
+ - GoogleLoginService
+ - GoogleServicesFramework
+ - Phonesky
+ - PrebuiltGmsCore
+
+### Contents
 An update zip contains a `META-INF` directory and other helper files. In the
 case of gapps, the only other directory is `system/`.
 
@@ -28,7 +80,7 @@ Recovery (see [install.cpp][3]). It is typically an Edify program which reads
 The following files exist in Google's factory image for the Nexus 5 (5.1.0
 LMY47I) and not in a CyanogenMod 12.1 build (from source at 2015-04-18).
 
-### Apps
+#### Apps
 
 Apps in system/priv-app/ are "privileged" apps which can gain more privileges
 than other system apps in system/app/ (see [AOSP Privileged vs System app][7]).
@@ -112,7 +164,7 @@ in system/app/:
 | WebViewGoogle     | com.google.android.webview            |
 | YouTube           | com.google.android.youtube            |
 
-### Other system files
+#### Other system files
 Data which is installed to the system partition (mounted under `/system`) are
 listed below.
 
@@ -160,7 +212,7 @@ files:
 | media/audio/ui/NFCTransferInitiated.ogg
 | media/audio/ui/VideoStop.ogg
 
-### Files under /system/lib/
+#### Files under /system/lib/
 While most of the files in /system/lib/ are library files, there is an exception
 for a certain set of files. These are text files:
 
@@ -204,7 +256,7 @@ reference to the string `iwnn`.
 | libvcdecoder\_jni.so  | Used by GoogleEars app.
 | libvorbisencoder.so   | Used by GoogleEars app.
 
-## Other resources
+### Other resources
 
  - [G+: Getting Android to be as Stallman-friendly as
    possible](https://plus.google.com/+AlexanderSkwar/posts/PqksGdf9N5u)
