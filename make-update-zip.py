@@ -80,7 +80,7 @@ def get_files(rootdir, packages):
 
 def make_signed_zip(update_zip, public_key, private_key):
     # Rename the original zip to -unsigned.zip
-    source_zip = '%s-unsigned%s' % os.path.splitext(update_zip)
+    source_zip = "%s-unsigned%s" % os.path.splitext(update_zip)
     _logger.debug("Renaming %s to %s", update_zip, source_zip)
     os.rename(update_zip, source_zip)
 
@@ -102,9 +102,10 @@ def make_signed_zip(update_zip, public_key, private_key):
 
 parser = argparse.ArgumentParser("make-update-zip.py", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument("-f", "--extra-file", dest="extra_files", nargs="*",
+parser.add_argument("-f", "--extra-file", dest="extra_files", action="append",
     help="""
-    Additional files (such as libraries) to include (relative to --rootdir)
+    Additional files (such as libraries) to include on the /system/ partition
+    (relative to --rootdir). This option can be given multiple times.
     """)
 parser.add_argument("-o", "--output", metavar="PATH", required=True,
     help="Path to output update zip file.")
@@ -135,7 +136,8 @@ def main():
 
     # Add additional files
     for path in args.extra_files:
-        zip_files.append((path, path))
+        dest = "system/%s" % path
+        zip_files.append((path, dest))
 
     # Pre-processing before APK can be handled.
     arch, boot_odex_path = odex2apk.detect_paths(apk_files[0])
