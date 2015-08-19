@@ -103,6 +103,7 @@ def make_signed_zip(update_zip, public_key, private_key):
 parser = argparse.ArgumentParser("make-update-zip.py", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument("-f", "--extra-file", dest="extra_files", action="append",
+    default=[],
     help="""
     Additional files (such as libraries) to include on the /system/ partition
     (relative to --rootdir). This option can be given multiple times.
@@ -136,8 +137,9 @@ def main():
 
     # Add additional files
     for path in args.extra_files:
+        src = os.path.join(rootdir, path)
         dest = "system/%s" % path
-        zip_files.append((path, dest))
+        zip_files.append((src, dest))
 
     # Pre-processing before APK can be handled.
     arch, boot_odex_path = odex2apk.detect_paths(apk_files[0])
