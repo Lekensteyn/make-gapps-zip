@@ -40,12 +40,19 @@ the zip ([update-binary](update-binary.sh)) then basically unpacks the system/
 folder to the `/system` partition (after mounting it).
 
 Example invocation to create an update.zip file with the four basic files needed
-for Google Play and sync adapters for sharing contacts and calender with Google:
+for Google Play, sync adapters for sharing contacts and calender with Google and
+a library for adding gesture typing support to the AOSP Keyboard:
 
     ./make-update-zip.py -o update.zip \
         -c keys/testkey.x509.pem -k keys/testkey.pk8 \
-        -r system GoogleLoginService GoogleServicesFramework Phonesky PrebuiltGmsCore \
-        GoogleContactsSyncAdapter CalendarProvider
+        -r /tmp/pfiles \
+        GoogleLoginService GoogleServicesFramework Phonesky PrebuiltGmsCore \
+        GoogleContactsSyncAdapter CalendarProvider \
+        -f lib/libjni_latinimegoogle.so
+
+In the above command, `-r /tmp/pfiles` specifies the location of the system
+partition contents (containing directories such as `priv-app` and `framework`).
+If not given, the current directory is assumed.
 
 The certificate (`keys/testkey.x509.pem`) and private key (`keys/testkey.pk8`)
 must match the keys that were used to sign the system packages (also known as
