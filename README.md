@@ -42,14 +42,15 @@ folder to the `/system` partition (after mounting it).
 Example invocation to create an update.zip file with the four basic files needed
 for Google Play and sync adapters for sharing contacts and calender with Google:
 
-    ./make-update-zip.py -o update.zip -c testkey.x509.pem -k testkey.pk8 \
+    ./make-update-zip.py -o update.zip \
+        -c keys/testkey.x509.pem -k keys/testkey.pk8 \
         -r system GoogleLoginService GoogleServicesFramework Phonesky PrebuiltGmsCore \
         GoogleContactsSyncAdapter CalendarProvider
 
-The certificate (`testkey.x509.pem`) and private key (`testkey.pk8`) must match
-the keys that were used to sign the system packages (also known as platform
-key). If these `-c ... -k ...` options are omitted, then you still have to sign
-the packages yourself using SignApk.jar.
+The certificate (`keys/testkey.x509.pem`) and private key (`keys/testkey.pk8`)
+must match the keys that were used to sign the system packages (also known as
+platform key). If these `-c ... -k ...` options are omitted, then you still have
+to sign the packages yourself using signapk.jar.
 
 The resulting zip file can then be installed in recovery with:
 
