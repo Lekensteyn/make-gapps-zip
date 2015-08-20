@@ -1,19 +1,29 @@
 #!/usr/bin/env python
 """
-Creates an APK file, merging OAT-optimized odex files as needed. Given a
-directory containing
+Creates an APK file, merging OAT-optimized odex files as needed. Given a package
+name, it will look for files
 
     framework/arm/boot.oat
     priv-app/GoogleServicesFramework/GoogleServicesFramework.apk
     priv-app/GoogleServicesFramework/arm/GoogleServicesFramework.odex
 
-this program will:
+and then this program will:
 
  1. Deoptimize framework/arm/boot.oat to framework/arm/odex/
  2. Deoptimize GoogleServicesFramework.odex to GoogleServicesFramework.dex
  3. Add GoogleServicesFramework.dex as classes.dex to the APK file.
 
-Set the OAT2DEX environment variable to the location of the oat2dex.jar file.
+Given a framework name (such as com.google.android.maps), the files
+
+    framework/arm/boot.oat
+    framework/com.google.android.maps.jar
+    framework/arm/com.google.android.maps.odex
+    etc/permissions/com.google.android.maps.xml
+
+will be looked up and this program will additionally install the XML file.
+
+Set the OAT2DEX environment variable to the location of the oat2dex.jar file
+(defaults to the bundled oat2dex.jar file).
 """
 __author__ = "Peter Wu"
 __email__ = "peter@lekensteyn.nl"
@@ -82,13 +92,16 @@ def add_classes_dex(apk_path, dex_path):
     Adds the file specified by dex_path to an APK file (specified by apk_path).
 
     For reproducible builds, the timestamp of classes.dex matches
-    AndroidManifest.xml.
+    AndroidManifest.xml (for APK files) or META-INF/MANIFEST.MF (for jar files).
     """
-    # Sanity check and AndroidManifest.xml timestamp and OS type lookup.
+    # Sanity check and timestamp and OS type lookup.
     with zipfile.ZipFile(apk_path) as z:
         if "classes.dex" in z.namelist():
             raise RuntimeError("classes.dex is already in %s!" % apk_path)
-        xml_zinfo = z.getinfo("AndroidManifest.xml")
+        if apk_path.endswith(".jar"):
+            xml_zinfo = z.getinfo("META-INF/MANIFEST.MF")
+        else:
+            xml_zinfo = z.getinfo("AndroidManifest.xml")
 
     # classes.dex zip entry info, independent of time, OS and Python version.
     zinfo = zipfile.ZipInfo("classes.dex", xml_zinfo.date_time)
@@ -104,8 +117,9 @@ def add_classes_dex(apk_path, dex_path):
 
 def process_apk(apk_path, arch, boot_odex_path):
     # Sanity check...
-    if not apk_path.endswith(".apk"):
-        raise RuntimeError("File %s is not an APK file!" % apk_path)
+    ext = os.path.splitext(apk_path)[1][1:]
+    if ext not in ("apk", "jar"):
+        raise RuntimeError("File %s is not an APK or framework file!" % apk_path)
 
     # Scan for classes.dex in file list
     file_list = zipfile.ZipFile(apk_path).namelist()
@@ -158,7 +172,8 @@ parser.add_argument("-f", "--framework", dest="framework_path",
     Directory that contains (arch)/boot.oat (if omitted, use ../../framework
     relative to the first given APK file).
     """)
-parser.add_argument("apk_files", nargs="+", help="Paths to APK files")
+parser.add_argument("apk_files", nargs="+",
+    help="Paths to APK or framework jar files.")
 
 # TODO: this is ugly, maybe split it...
 def detect_paths(apk_file, arch=None, framework_path=None):
@@ -166,7 +181,16 @@ def detect_paths(apk_file, arch=None, framework_path=None):
 
     # Default to ../../framework/boot relative if not given.
     if not framework_path:
-        framework_path = os.path.join(first_apk_dir, "..", "..", "framework")
+        ext = os.path.splitext(apk_file)[1][1:]
+        if ext == "apk":
+            # Assume path app/Foo/Foo.apk
+            framework_path = os.path.join(first_apk_dir, "..", "..", "framework")
+        elif ext == "jar":
+            # Assume path framework/com.google.android.maps.jar
+            framework_path = first_apk_dir
+        else:
+            _logger.error("Unknown file, expected apk or jar")
+            sys.exit(1)
 
     # Detect architecture based on the APK files.
     if not arch:

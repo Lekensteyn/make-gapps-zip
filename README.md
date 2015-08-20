@@ -217,7 +217,7 @@ files:
 | ------------------------------------- | -----------
 | com.google.android.camera2            |
 | com.google.android.dialer.support     |
-| com.google.android.maps               |
+| com.google.android.maps               | Required for apps that use the Google Maps API.
 | com.google.android.media.effects      |
 | com.google.widevine.software.drm      |
 

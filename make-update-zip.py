@@ -44,6 +44,11 @@ def find_files(root, prefix=""):
             yield relative_path
 
 def get_files(rootdir, packages):
+    """
+    Scans for (APK) files in (rootdir)/app/(package)/ or
+    (rootdir)/priv-app/(package)/. When no such directory is found, a framework
+    file is instead looked up in (rootdir)/framework/(package).jar.
+    """
     for package in packages:
         # Find app dir (priv-app for system apps, app for others), relative to
         # the root directory (system/).
@@ -52,6 +57,22 @@ def get_files(rootdir, packages):
             apk_dir_full = os.path.join(rootdir, apk_dir)
             if os.path.isdir(apk_dir_full):
                 break
+
+        # Not an app, perhaps it is a library (jar) for the framework.
+        if not os.path.isdir(apk_dir_full):
+            jar_path = os.path.join("framework", "%s.jar" % package)
+            jar_path_full = os.path.join(rootdir, jar_path)
+            if os.path.exists(jar_path_full):
+                # Yes, it is a framework jar!
+                yield jar_path_full, "system/%s" % jar_path
+
+                # Assume existence of XML file that enables <uses-library>
+                xml_path = os.path.join("etc", "permissions", "%s.xml" % package)
+                xml_path_full = os.path.join(rootdir, xml_path)
+                yield xml_path_full, "system/%s" % xml_path
+
+                # This library has no other related files in the same dir.
+                continue
 
         # Add all files (apk, arm/bla.so) except hidden files (dotfiles) and
         # (o)dex files. Paths are relative to the system/ root.
@@ -131,7 +152,8 @@ def main():
     zip_files = [] # (path, path_in_zip)
     # Discover files
     for path, dest in get_files(rootdir, packages):
-        if path.endswith(".apk"):
+        ext = os.path.splitext(path)[1][1:]
+        if ext in ("apk", "jar"):
             apk_files.append(path)
         zip_files.append((path, dest))
 
