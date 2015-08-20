@@ -109,7 +109,7 @@ def add_classes_dex(apk_path, dex_path):
     zinfo.create_system = xml_zinfo.create_system
     zinfo.create_version = xml_zinfo.create_version
     zinfo.extract_version = xml_zinfo.extract_version
-    data = open(apk_path, "rb").read()
+    data = open(dex_path, "rb").read()
 
     # Write actual classes.dex.
     with zipfile.ZipFile(apk_path, "a") as z:
