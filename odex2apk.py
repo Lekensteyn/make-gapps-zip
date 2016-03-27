@@ -38,7 +38,7 @@ _dirname = os.path.dirname(__file__)
 OAT2DEX = os.getenv("OAT2DEX", os.path.join(_dirname, "oat2dex.jar"))
 
 # Supported architectures (first match will be used)
-architectures = ["arm", "arm64", "x86", "x86_64"]
+architectures = ["x86_64", "x86", "arm64", "arm"]
 
 def detect_arch(dirname):
     # Look for first available architecture (as subdir)
@@ -56,7 +56,11 @@ def find_odex_for_apk(apk_path, arch):
     dirname, filename = os.path.split(apk_path)
     odex_filename = "%s.odex" % os.path.splitext(filename)[0]
 
-    odex_path = os.path.join(dirname, arch, odex_filename)
+    odex_path = os.path.join(dirname, "oat", arch, odex_filename)  # Marshmallow
+    if os.path.exists(odex_path):
+        return odex_path
+
+    odex_path = os.path.join(dirname, arch, odex_filename)  # Lollipop
     if os.path.exists(odex_path):
         return odex_path
 
