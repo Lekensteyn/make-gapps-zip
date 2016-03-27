@@ -56,7 +56,11 @@ def find_odex_for_apk(apk_path, arch):
     dirname, filename = os.path.split(apk_path)
     odex_filename = "%s.odex" % os.path.splitext(filename)[0]
 
-    odex_path = os.path.join(dirname, arch, odex_filename)
+    odex_path = os.path.join(dirname, "oat", arch, odex_filename)  # Marshmallow
+    if os.path.exists(odex_path):
+        return odex_path
+
+    odex_path = os.path.join(dirname, arch, odex_filename)  # Lollipop
     if os.path.exists(odex_path):
         return odex_path
 
