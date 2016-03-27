@@ -38,7 +38,7 @@ _dirname = os.path.dirname(__file__)
 OAT2DEX = os.getenv("OAT2DEX", os.path.join(_dirname, "oat2dex.jar"))
 
 # Supported architectures (first match will be used)
-architectures = ["arm", "arm64", "x86", "x86_64"]
+architectures = ["x86_64", "x86", "arm64", "arm"]
 
 def detect_arch(dirname):
     # Look for first available architecture (as subdir)
